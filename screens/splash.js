@@ -5,31 +5,39 @@ import {
   View,
   Image,
   ProgressBarAndroid,
-  Dimensions
+  Dimensions,
+  ImageBackground
 } from "react-native";
 import { robotoWeights } from "react-native-typography";
-import { ScreenOrientation } from "expo";
+import label from "../assets/label.png";
+import menu_background from "../assets/menu_background.jpg";
 
 class Splash extends React.Component {
   componentDidMount() {
-    ScreenOrientation.allowAsync(
-      ScreenOrientation.Orientation.ALL_BUT_UPSIDE_DOWN
-    );
+    setTimeout(() => {
+      this.props.navigation.navigate("Menu");
+      console.log("SWITCH");
+    }, 5000);
   }
 
   render() {
     return (
-      <View style={styles.container}>
-        <Image style={styles.label} source={require("../assets/label.png")} />
-        <Text style={[styles.name, styles.robotoWeights]}>TicTacToe</Text>
-        <ProgressBarAndroid
-          style={styles.progressBar}
-          styleAttr="Horizontal"
-          indeterminate={true}
-          progress={0.5}
-          color={"black"}
-        />
-      </View>
+      <ImageBackground
+        source={menu_background}
+        style={{ width: "100%", height: "100%" }}
+      >
+        <View style={styles.container}>
+          <Image style={styles.label} source={label} />
+          <Text style={[styles.name, styles.robotoWeights]}>TicTacToe</Text>
+          <ProgressBarAndroid
+            style={styles.progressBar}
+            styleAttr="Horizontal"
+            indeterminate={true}
+            progress={0.5}
+            color={"black"}
+          />
+        </View>
+      </ImageBackground>
     );
   }
 }
@@ -38,8 +46,8 @@ export default Splash;
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 50,
-    marginBottom: 50,
+    paddingTop: 100,
+    paddingBottom: 50,
     flex: 1,
     alignItems: "center",
     flexDirection: "column",

@@ -1,6 +1,8 @@
 import React from "react";
-import { createAppContainer } from "react-navigation";
+import { createAppContainer, Header } from "react-navigation";
+import { ScreenOrientation } from "expo";
+import { Routes } from "./navigation/Routes";
 
-import TicTacToe from "../react-native-app-ticTacToe/navigation/TicTacToe";
+ScreenOrientation.allowAsync(ScreenOrientation.Orientation.ALL_BUT_UPSIDE_DOWN);
 
-export default createAppContainer(TicTacToe);
+export default createAppContainer(Routes);
