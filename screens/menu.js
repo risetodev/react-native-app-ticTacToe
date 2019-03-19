@@ -1,45 +1,57 @@
 import React, { Component } from "react";
-import { StyleSheet, View, ImageBackground, Text, Image } from "react-native";
-import menu_background from "../assets/menu_background.jpg";
+import {
+  StyleSheet,
+  Text,
+  Image,
+  Dimensions,
+  View,
+  BackHandler
+} from "react-native";
 import { robotoWeights } from "react-native-typography";
 import label from "../assets/label.png";
 import { MenuButton } from "../ViewComponents/MenuButton";
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp
+} from "react-native-responsive-screen";
+import { ResponsiveLayout } from "../ViewComponents/ResponsiveLayout";
 
 class Menu extends Component {
   componentDidMount() {
-    setTimeout(() => {
-      this.props.navigation.navigate("Board");
-      console.log("Menu");
-    }, 1000);
+    Dimensions.addEventListener("change", () => {
+      Dimensions.get("window").height < Dimensions.get("window").width
+        ? this.setState({ isLandscape: true })
+        : this.setState({ isLandscape: false });
+    });
   }
+
+  state = {
+    isLandscape: false
+  };
+
+  PvP = () => {
+    this.props.navigation.navigate("Board");
+  };
+  PvB = () => {
+    this.props.navigation.navigate("Board");
+  };
+
   render() {
     return (
-      <ImageBackground
-        source={menu_background}
-        style={{ width: "100%", height: "100%" }}
-      >
-        {/*
-        <Text
-          style={[
-            { paddingTop: 30, fontSize: 30 },
-            { ...robotoWeights.titleObject, ...robotoWeights.medium }
-          ]}
-        >
-          Total winned: 123
-        </Text>
-        
-      
-      */}
-
-        <View style={styles.container}>
-          <Image style={styles.label} source={label} />
-          <Text style={[styles.name, styles.robotoWeights]}>TicTacToe</Text>
-          <MenuButton>Player vs Player</MenuButton>
-          <MenuButton>Player vs BOT</MenuButton>
+      <ResponsiveLayout>
+        {this.state.isLandscape || (
+          <>
+            <Image style={styles.label} source={label} resizeMode="contain" />
+            <Text style={[styles.name, styles.robotoWeights]}>TicTacToe</Text>
+          </>
+        )}
+        <View>
+          <MenuButton onPress={this.PvP}>Player vs Player</MenuButton>
+          <MenuButton onPress={this.PvB}>Player vs BOT</MenuButton>
           <MenuButton>Score board</MenuButton>
-          <MenuButton>Exit game</MenuButton>
+          <MenuButton onPress={BackHandler.exitApp}>Exit game</MenuButton>
         </View>
-      </ImageBackground>
+      </ResponsiveLayout>
     );
   }
 }
@@ -47,22 +59,12 @@ class Menu extends Component {
 export default Menu;
 
 const styles = StyleSheet.create({
-  container: {
-    paddingTop: 50,
-    paddingLeft: 100,
-    paddingRight: 100,
-    flex: 1,
-    alignItems: "center",
-    flexDirection: "column"
-  },
   name: {
     color: "black",
-    fontSize: 40,
-    paddingBottom: 30
+    fontSize: Dimensions.get("window").height - hp("93%")
   },
   robotoWeights: { ...robotoWeights.titleObject, ...robotoWeights.light },
   label: {
-    height: 50,
-    width: 50
+    height: Dimensions.get("window").height - hp("80%")
   }
 });

@@ -2,32 +2,31 @@ import React from "react";
 import {
   StyleSheet,
   Text,
-  View,
   Image,
   ProgressBarAndroid,
-  Dimensions,
-  ImageBackground
+  Dimensions
 } from "react-native";
 import { robotoWeights } from "react-native-typography";
 import label from "../assets/label.png";
-import menu_background from "../assets/menu_background.jpg";
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp
+} from "react-native-responsive-screen";
+import { ResponsiveLayout } from "../ViewComponents/ResponsiveLayout";
 
 class Splash extends React.Component {
   componentDidMount() {
     setTimeout(() => {
-      this.props.navigation.navigate("Menu");
+      this.props.navigation.replace("Menu");
       console.log("Splash");
     }, 0);
   }
 
   render() {
     return (
-      <ImageBackground
-        source={menu_background}
-        style={{ width: "100%", height: "100%" }}
-      >
-        <View style={styles.container}>
-          <Image style={styles.label} source={label} />
+      <ResponsiveLayout>
+        <>
+          <Image style={styles.label} source={label} resizeMode="contain" />
           <Text style={[styles.name, styles.robotoWeights]}>TicTacToe</Text>
           <ProgressBarAndroid
             style={styles.progressBar}
@@ -36,8 +35,8 @@ class Splash extends React.Component {
             progress={0.5}
             color={"black"}
           />
-        </View>
-      </ImageBackground>
+        </>
+      </ResponsiveLayout>
     );
   }
 }
@@ -45,21 +44,12 @@ class Splash extends React.Component {
 export default Splash;
 
 const styles = StyleSheet.create({
-  container: {
-    paddingTop: 100,
-    paddingBottom: 50,
-    flex: 1,
-    alignItems: "center",
-    flexDirection: "column",
-    justifyContent: "space-between"
-  },
   label: {
-    height: 250,
-    width: 250
+    height: Dimensions.get("window").height - hp("70%")
   },
   name: {
     color: "black",
-    fontSize: 70
+    fontSize: Dimensions.get("window").height - hp("90%")
   },
   robotoWeights: {
     ...robotoWeights.titleObject,

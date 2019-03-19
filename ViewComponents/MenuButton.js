@@ -9,6 +9,7 @@ export const MenuButton = props => (
     buttonStyle={styles.buttonStyle}
     containerStyle={{ marginTop: 10 }}
     title={props.children}
+    onPress={props.onPress}
     type="outline"
   />
 );

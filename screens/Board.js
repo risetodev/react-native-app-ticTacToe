@@ -27,20 +27,21 @@ class Board extends React.Component {
         style={{ width: "100%", height: "100%" }}
       >
         <View style={styles.container}>
-          <FlatList
-            data={this.state.board}
-            keyExtractor={(item, i) => i}
-            style={styles.flatListContainer}
-            renderItem={({ item, index }) => (
-              <TouchableHighlight
-                style={styles.cell}
-                onPress={() => this.onOpen(index)}
-              >
-                <View />
-              </TouchableHighlight>
-            )}
-            numColumns={3}
-          />
+          <View style={styles.flatListContainer}>
+            <FlatList
+              data={this.state.board}
+              keyExtractor={(item, i) => i}
+              renderItem={({ item, index }) => (
+                <TouchableHighlight
+                  style={styles.cell}
+                  onPress={() => this.onOpen(index)}
+                >
+                  <View />
+                </TouchableHighlight>
+              )}
+              numColumns={3}
+            />
+          </View>
         </View>
       </ImageBackground>
     );
@@ -51,24 +52,27 @@ export default Board;
 
 const styles = StyleSheet.create({
   container: {
-    paddingTop: 100,
-    paddingLeft: 10,
-    paddingRight: 10,
-    paddingBottom: hp("20%"),
     flex: 1,
     alignItems: "center",
-    flexDirection: "column"
+    justifyContent: "center"
   },
   flatListContainer: {
-    flex: 1,
-    paddingBottom: 100,
+    width: Dimensions.get("window").width - wp("21%"),
+    height: Dimensions.get("window").height - hp("51%"),
+    flexDirection: "column",
+    justifyContent: "space-around",
     backgroundColor: "black"
   },
   cell: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
     marginBottom: 1,
     marginRight: 1,
-    height: Dimensions.get("window").width / 3,
-    width: Dimensions.get("window").width / 3,
+    marginLeft: 1,
+    marginTop: 1,
+    height: (Dimensions.get("window").height - hp("52%")) / 3,
+    width: (Dimensions.get("window").width - wp("22%")) / 3,
     backgroundColor: "white"
   }
 });
