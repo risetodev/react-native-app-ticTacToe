@@ -1,10 +1,11 @@
 import React, { Component } from "react";
-import { Text, StyleSheet, View, Dimensions } from "react-native";
+import { StyleSheet, Dimensions } from "react-native";
+import { robotoWeights } from "react-native-typography";
 import { Button } from "react-native-elements";
 
 export const MenuButton = props => (
   <Button
-    titleStyle={styles.buttonTitleStyle}
+    titleStyle={[styles.buttonTitleStyle, styles.robotoWeights]}
     buttonStyle={styles.buttonStyle}
     containerStyle={{ marginTop: 10 }}
     title={props.children}
@@ -20,6 +21,10 @@ const styles = StyleSheet.create({
   buttonStyle: {
     width: Dimensions.get("window").width - 70,
     borderColor: "black",
-    borderWidth: 3
+    borderWidth: 2
+  },
+  robotoWeights: {
+    ...robotoWeights.titleObject,
+    ...robotoWeights.light
   }
 });
