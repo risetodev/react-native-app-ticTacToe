@@ -18,22 +18,28 @@ import { ResponsiveLayout } from "../ViewComponents/ResponsiveLayout";
 
 class Menu extends Component {
   componentDidMount() {
-    Dimensions.addEventListener("change", () => {
-      Dimensions.get("window").height < Dimensions.get("window").width
-        ? this.setState({ isLandscape: true })
-        : this.setState({ isLandscape: false });
-    });
+    Dimensions.addEventListener("change", () =>
+      this.setState({
+        isLandscape:
+          Dimensions.get("window").height < Dimensions.get("window").width
+      })
+    );
+
+    setTimeout(() => {
+      this.props.navigation.navigate("Board_PvP");
+      console.log("Board_PvP");
+    }, 0);
   }
 
   state = {
-    isLandscape: false
+    isLandscape: true
   };
 
   PvP = () => {
-    this.props.navigation.navigate("Board");
+    this.props.navigation.navigate("Board_PvP");
   };
   PvB = () => {
-    this.props.navigation.navigate("Board");
+    this.props.navigation.navigate("Board_PvB");
   };
 
   render() {

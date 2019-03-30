@@ -1,8 +1,9 @@
 import React from "react";
-import { createStackNavigator, StackNavigator } from "react-navigation";
+import { createStackNavigator } from "react-navigation";
 import Menu from "../screens/Menu";
 import Splash from "../screens/Splash";
-import Board from "../screens/Board";
+import Board_PvP from "../screens/Board_PvP";
+import Board_PvB from "../screens/Board_PvB";
 
 export const Routes = createStackNavigator({
   Splash: {
@@ -17,8 +18,14 @@ export const Routes = createStackNavigator({
       header: null
     })
   },
-  Board: {
-    screen: Board,
+  Board_PvP: {
+    screen: Board_PvP,
+    navigationOptions: ({ navigation }) => ({
+      header: null
+    })
+  },
+  Board_PvB: {
+    screen: Board_PvB,
     navigationOptions: ({ navigation }) => ({
       header: null
     })

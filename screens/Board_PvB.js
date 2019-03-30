@@ -9,15 +9,18 @@ import {
   TouchableHighlight
 } from "react-native";
 import menu_background from "../assets/menu_background.jpg";
-import { black } from "ansi-colors";
+
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp
 } from "react-native-responsive-screen";
 
+// const possibleWaysToWin = [1, 1, 1];
+// const possibleWaysToWin = [0, 0, 0];
+
 class Board extends React.Component {
   state = {
-    board: [1, 2, 3, 4, 5, 6, 7, 8, 9]
+    board: [1, 2, 3, 4, 5, 6, 7, 8, 9] //board
   };
 
   render() {
