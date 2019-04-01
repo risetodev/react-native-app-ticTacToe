@@ -8,9 +8,10 @@ import {
   Alert,
   Button,
   TextInput,
-  ImageBackground
+  ImageBackground,
+  Image
 } from "react-native";
-
+import label from "../assets/label.png";
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp
@@ -26,18 +27,35 @@ class Board extends React.Component {
     gameState: [[0, 0, 0], [0, 0, 0], [0, 0, 0]],
     currentPlayer: 1,
     player1: "Mike",
+    player1Win: 0,
     player2: "Ruslan",
+    player2Win: 0,
+    draws: 0,
     isValid: true,
     isWinner: false,
-    isDrawOrWin: false,
-    isLandscape: false,
-    winnedGames: 0
+    isDraw: false,
+    isLandscape:
+      Dimensions.get("window").height < Dimensions.get("window").width,
+    lock: false
   };
+
+  componentDidMount() {
+    this.initGame();
+    Dimensions.addEventListener("change", () =>
+      this.setState({
+        isLandscape:
+          Dimensions.get("window").height < Dimensions.get("window").width
+      })
+    );
+  }
 
   initGame = () => {
     this.setState({
       gameState: [[0, 0, 0], [0, 0, 0], [0, 0, 0]],
-      currentPlayer: 1
+      currentPlayer: 1,
+      isWinner: false,
+      isDraw: false,
+      lock: false
     });
   };
 
@@ -50,31 +68,74 @@ class Board extends React.Component {
     //rows validation
     for (let i = 0; i < 3; i++) {
       win = board[i][0] + board[i][1] + board[i][2];
-      if (win === 3) return 1;
-      else if (win === -3) return -1;
+      if (win === 3) {
+        this.setState({
+          player1Win: this.state.player1Win + 1,
+          currentPlayer: 1
+        });
+        return 1;
+      } else if (win === -3) {
+        this.setState({
+          player2Win: this.state.player2Win + 1,
+          currentPlayer: -1
+        });
+        return -1;
+      }
     }
 
     //columns validation
     for (let i = 0; i < 3; i++) {
       win = board[0][i] + board[1][i] + board[2][i];
-      if (win === 3) return 1;
-      else if (win === -3) return -1;
+      if (win === 3) {
+        this.setState({
+          player1Win: this.state.player1Win + 1,
+          currentPlayer: 1
+        });
+        return 1;
+      } else if (win === -3) {
+        this.setState({
+          player2Win: this.state.player2Win + 1,
+          currentPlayer: -1
+        });
+        return -1;
+      }
     }
 
     //diagonals validation
     win = board[0][0] + board[1][1] + board[2][2];
-    if (win === 3) return 1;
-    else if (win === -3) return -1;
-    win = board[0][2] + board[1][1] + board[2][0];
-    if (win === 3) return 1;
-    else if (win === -3) return -1;
+    if (win === 3) {
+      this.setState({
+        player1Win: this.state.player1Win + 1,
+        currentPlayer: 1
+      });
+      return 1;
+    } else if (win === -3) {
+      this.setState({
+        player2Win: this.state.player2Win + 1,
+        currentPlayer: -1
+      });
+      return -1;
+    }
 
+    win = board[0][2] + board[1][1] + board[2][0];
+    if (win === 3) {
+      this.setState({
+        player1Win: this.state.player1Win + 1,
+        currentPlayer: 1
+      });
+      return 1;
+    } else if (win === -3) {
+      this.setState({
+        player2Win: this.state.player2Win + 1,
+        currentPlayer: -1
+      });
+      return -1;
+    }
     return 0;
   };
 
   reloadGame = () => {
     this.initGame();
-    this.setState({ isWinner: false, isDrawOrWin: false });
   };
 
   onPress = (row, col) => {
@@ -90,15 +151,28 @@ class Board extends React.Component {
 
     let winner = this.getWinner();
     if (winner !== 0) {
-      this.setState({ isWinner: true, isDrawOrWin: true });
+      this.setState({
+        isWinner: true,
+        isDrawOrWin: true,
+        lock: true
+      });
     }
+
     this.isDrawOrWin(arr);
   };
 
-  isWinner = () => {
+  WinnerComponent = () => {
     return (
       <View>
         <Text style={styles.player}>{this.getPlayerName()} wins!</Text>
+      </View>
+    );
+  };
+
+  DrawComponent = () => {
+    return (
+      <View>
+        <Text style={styles.player}>This is a draw!</Text>
       </View>
     );
   };
@@ -116,16 +190,6 @@ class Board extends React.Component {
     }
   };
 
-  componentDidMount() {
-    this.initGame();
-    Dimensions.addEventListener("change", () =>
-      this.setState({
-        isLandscape:
-          Dimensions.get("window").height < Dimensions.get("window").width
-      })
-    );
-  }
-
   hideReloadButton = () => {
     this.setState({ isDrawOrWin: true });
   };
@@ -135,6 +199,8 @@ class Board extends React.Component {
     for (let i = 0; i < 3; i++)
       for (let j = 0; j < 3; j++) if (array[i][j] !== 0) count++;
     count === 9 && this.setState({ isDrawOrWin: true });
+    if (count === 9 && this.getWinner() === 0)
+      this.setState({ draws: this.state.draws + 1, isDraw: true });
   };
 
   isValidInput = () => {
@@ -179,18 +245,24 @@ class Board extends React.Component {
     <View>
       <View style={{ flexDirection: "row" }}>
         <TouchableOpacity
+          disabled={this.state.lock}
           onPress={() => this.onPress(0, 0)}
           style={[styles.cell, { borderLeftWidth: 0, borderTopWidth: 0 }]}
+          activeOpacity={1}
         >
           {this.renderSymbol(0, 0)}
         </TouchableOpacity>
         <TouchableOpacity
+          disabled={this.state.lock}
+          activeOpacity={1}
           onPress={() => this.onPress(0, 1)}
           style={[styles.cell, { borderTopWidth: 0 }]}
         >
           {this.renderSymbol(0, 1)}
         </TouchableOpacity>
         <TouchableOpacity
+          disabled={this.state.lock}
+          activeOpacity={1}
           onPress={() => this.onPress(0, 2)}
           style={[styles.cell, { borderRightWidth: 0, borderTopWidth: 0 }]}
         >
@@ -199,18 +271,24 @@ class Board extends React.Component {
       </View>
       <View style={{ flexDirection: "row" }}>
         <TouchableOpacity
+          disabled={this.state.lock}
+          activeOpacity={1}
           onPress={() => this.onPress(1, 0)}
           style={[styles.cell, { borderLeftWidth: 0 }]}
         >
           {this.renderSymbol(1, 0)}
         </TouchableOpacity>
         <TouchableOpacity
+          disabled={this.state.lock}
+          activeOpacity={1}
           onPress={() => this.onPress(1, 1)}
           style={styles.cell}
         >
           {this.renderSymbol(1, 1)}
         </TouchableOpacity>
         <TouchableOpacity
+          disabled={this.state.lock}
+          activeOpacity={1}
           onPress={() => this.onPress(1, 2)}
           style={[styles.cell, { borderRightWidth: 0 }]}
         >
@@ -219,18 +297,24 @@ class Board extends React.Component {
       </View>
       <View style={{ flexDirection: "row" }}>
         <TouchableOpacity
+          disabled={this.state.lock}
+          activeOpacity={1}
           onPress={() => this.onPress(2, 0)}
           style={[styles.cell, { borderLeftWidth: 0, borderBottomWidth: 0 }]}
         >
           {this.renderSymbol(2, 0)}
         </TouchableOpacity>
         <TouchableOpacity
+          disabled={this.state.lock}
+          activeOpacity={1}
           onPress={() => this.onPress(2, 1)}
           style={[styles.cell, { borderBottomWidth: 0 }]}
         >
           {this.renderSymbol(2, 1)}
         </TouchableOpacity>
         <TouchableOpacity
+          disabled={this.state.lock}
+          activeOpacity={1}
           onPress={() => this.onPress(2, 2)}
           style={[styles.cell, { borderBottomWidth: 0, borderRightWidth: 0 }]}
         >
@@ -260,11 +344,11 @@ class Board extends React.Component {
             >
               <Text style={styles.player}>
                 <Icon name="close" style={{ fontSize: hp("5%") }} />
-                {this.state.player1}: 7
+                {this.state.player1}: {this.state.player1Win}
               </Text>
               <Text style={styles.player}>
                 <Icon name="circle-outline" style={{ fontSize: hp("4%") }} />
-                {this.state.player2}: 5
+                {this.state.player2}: {this.state.player2Win}
               </Text>
             </View>
             <View
@@ -273,7 +357,7 @@ class Board extends React.Component {
                 justifyContent: "space-around"
               }}
             >
-              <Text style={styles.player}>Draws: 5</Text>
+              <Text style={styles.player}> Draws: {this.state.draws}</Text>
             </View>
           </View>
         </View>
@@ -284,8 +368,25 @@ class Board extends React.Component {
             justifyContent: "space-around"
           }}
         >
-          {this.state.isWinner ? this.isWinner() : this.board()}
-          {this.state.isDrawOrWin && (
+          {this.state.isWinner && this.WinnerComponent()}
+          {this.state.isDraw && this.DrawComponent()}
+          {this.board()}
+        </View>
+
+        <View>
+          <Text style={styles.player}>
+            Current{"\n"}move:{"\n"}
+          </Text>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-around"
+            }}
+          >
+            <Text style={styles.player}>{this.getPlayerName()}</Text>
+          </View>
+
+          {(this.state.isDraw || this.state.isWinner) && (
             <Button
               color="#000"
               title="Reload game"
@@ -293,21 +394,6 @@ class Board extends React.Component {
             />
           )}
         </View>
-        {this.state.isDrawOrWin ? null : (
-          <View>
-            <Text style={styles.player}>
-              Current{"\n"}move:{"\n"}
-            </Text>
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-around"
-              }}
-            >
-              <Text style={styles.player}>{this.getPlayerName()}</Text>
-            </View>
-          </View>
-        )}
       </View>
     </ImageBackground>
   );
@@ -326,51 +412,70 @@ class Board extends React.Component {
             {this.state.isValid ? (
               <ResponsiveLayout>
                 <View style={styles.scoreBoard}>
+                  <Image
+                    style={styles.label}
+                    source={label}
+                    resizeMode="contain"
+                  />
                   <View
-                    style={{ flexDirection: "column", alignItems: "center" }}
+                    style={{
+                      flexDirection: "column",
+                      alignItems: "center"
+                    }}
                   >
-                    <Text style={[styles.player, { marginBottom: "3%" }]}>
-                      Wined games
-                    </Text>
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        justifyContent: "space-between"
-                      }}
-                    >
-                      <Text style={[styles.player, { marginRight: "20%" }]}>
-                        <Icon name="close" style={{ fontSize: hp("5%") }} />
-                        {this.state.player1}: 7
-                      </Text>
+                    <View style={styles.playersScoreBoard}>
+                      <View style={styles.playerScore}>
+                        <Text>
+                          <Icon name="close" style={{ fontSize: hp("4%") }} />
+                        </Text>
+                        <Text style={styles.player}>
+                          {this.state.player1}: {this.state.player1Win}
+                        </Text>
+                      </View>
+                      <View
+                        style={[
+                          styles.player,
+                          {
+                            margin: wp("5%")
+                          }
+                        ]}
+                      >
+                        <Text />
+                      </View>
+                      <View style={styles.playerScore}>
+                        <Text>
+                          <Icon
+                            name="circle-outline"
+                            style={{ fontSize: hp("3%") }}
+                          />
+                        </Text>
+                        <Text style={styles.player}>
+                          {this.state.player2}: {this.state.player2Win}
+                        </Text>
+                      </View>
+                    </View>
+                  </View>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "center"
+                    }}
+                  >
+                    <Text style={styles.player}>Draws: {this.state.draws}</Text>
+                  </View>
+                  {!(this.state.isDraw || this.state.isWinner) && (
+                    <View>
                       <Text style={styles.player}>
-                        {" "}
-                        <Icon
-                          name="circle-outline"
-                          style={{ fontSize: hp("4%") }}
-                        />
-                        {this.state.player2}: 5
+                        Current move: {this.getPlayerName()}
                       </Text>
                     </View>
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        justifyContent: "space-around"
-                      }}
-                    >
-                      <Text style={styles.player}>Draws: 5</Text>
-                    </View>
-                  </View>
+                  )}
                 </View>
-                {this.state.isDrawOrWin ? null : (
-                  <View>
-                    <Text style={styles.player}>
-                      Current move: {this.getPlayerName()}
-                    </Text>
-                  </View>
-                )}
 
-                {this.state.isWinner ? this.isWinner() : this.board()}
-                {this.state.isDrawOrWin && (
+                {this.state.isWinner && this.WinnerComponent()}
+                {this.state.isDraw && this.DrawComponent()}
+                {this.board()}
+                {(this.state.isDraw || this.state.isWinner) && (
                   <Button
                     color="#000"
                     title="Reload game"
@@ -396,9 +501,9 @@ const styles = StyleSheet.create({
     alignItems: "center"
   },
   cell: {
-    borderWidth: 1.5,
-    height: (Dimensions.get("window").height - hp("52%")) / 3,
-    width: (Dimensions.get("window").width - wp("22%")) / 3,
+    borderWidth: 3,
+    height: Dimensions.get("window").height / 6.5,
+    width: Dimensions.get("window").width / 4,
     alignItems: "center",
     justifyContent: "center"
   },
@@ -426,9 +531,22 @@ const styles = StyleSheet.create({
   player: {
     fontSize: hp("5%")
   },
+  playerScore: {
+    flexDirection: "row",
+    alignItems: "center"
+  },
+  playersScoreBoard: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center"
+  },
   landscapeContainer: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-around"
+  },
+  label: {
+    height: Dimensions.get("window").height - hp("90%"),
+    marginBottom: Dimensions.get("window").height - hp("98%")
   }
 });

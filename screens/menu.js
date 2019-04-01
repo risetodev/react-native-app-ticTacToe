@@ -17,6 +17,10 @@ import {
 import { ResponsiveLayout } from "../ViewComponents/ResponsiveLayout";
 
 class Menu extends Component {
+  state = {
+    isLandscape:
+      Dimensions.get("window").height < Dimensions.get("window").width
+  };
   componentDidMount() {
     Dimensions.addEventListener("change", () =>
       this.setState({
@@ -26,14 +30,10 @@ class Menu extends Component {
     );
 
     setTimeout(() => {
-      this.props.navigation.navigate("Board_PvP");
-      console.log("Board_PvP");
+      this.props.navigation.navigate("Board_PvB");
+      console.log("Board_PvB");
     }, 0);
   }
-
-  state = {
-    isLandscape: false
-  };
 
   PvP = () => {
     this.props.navigation.navigate("Board_PvP");

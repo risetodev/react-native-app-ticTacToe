@@ -14,7 +14,8 @@
     "react-native-responsive-screen": "^1.2.1",
     "react-native-typography": "^1.4.0",
     "react-native-vector-icons": "^6.4.2",
-    "react-navigation": "^3.4.1"
+    "react-navigation": "^3.4.1",
+    "tic-tac-toe-ai-engine": "^1.0.9"
   },
   "devDependencies": {
     "babel-preset-expo": "^5.0.0"
