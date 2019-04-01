@@ -7,7 +7,8 @@ import {
   View,
   Alert,
   Button,
-  TextInput
+  TextInput,
+  ImageBackground
 } from "react-native";
 
 import {
@@ -17,18 +18,20 @@ import {
 
 import { MaterialCommunityIcons as Icon } from "react-native-vector-icons";
 import { ResponsiveLayout } from "../ViewComponents/ResponsiveLayout";
+import menu_background from "../assets/menu_background.jpg";
 
 class Board extends React.Component {
   state = {
     board: [],
     gameState: [[0, 0, 0], [0, 0, 0], [0, 0, 0]],
     currentPlayer: 1,
-    player1: "",
-    player2: "",
-    isValid: false,
+    player1: "Mike",
+    player2: "Ruslan",
+    isValid: true,
     isWinner: false,
     isDrawOrWin: false,
-    isLandscape: false
+    isLandscape: false,
+    winnedGames: 0
   };
 
   initGame = () => {
@@ -86,9 +89,7 @@ class Board extends React.Component {
     this.setState({ currentPlayer: nextPlayer });
 
     let winner = this.getWinner();
-    if (winner === 1) {
-      this.setState({ isWinner: true, isDrawOrWin: true });
-    } else if (winner === -1) {
+    if (winner !== 0) {
       this.setState({ isWinner: true, isDrawOrWin: true });
     }
     this.isDrawOrWin(arr);
@@ -151,7 +152,7 @@ class Board extends React.Component {
           <TextInput
             style={styles.input}
             onChangeText={player1 => this.setState({ player1 })}
-            value={this.state.player1}
+            value={this.state.player1.trim()}
           />
           <Text style={[styles.player, { paddingTop: hp("3%") }]}>
             Player 2:
@@ -159,7 +160,7 @@ class Board extends React.Component {
           <TextInput
             style={styles.input}
             onChangeText={player2 => this.setState({ player2 })}
-            value={this.state.player2}
+            value={this.state.player2.trim()}
           />
         </View>
         <View style={styles.submit}>
@@ -239,38 +240,148 @@ class Board extends React.Component {
     </View>
   );
 
+  landscapeMode = () => (
+    <ImageBackground
+      source={menu_background}
+      style={{
+        width: "100%",
+        height: "100%",
+
+        justifyContent: "center"
+      }}
+    >
+      <View style={styles.landscapeContainer}>
+        <View style={styles.scoreBoard}>
+          <View style={{ flexDirection: "column" }}>
+            <View
+              style={{
+                flexDirection: "column"
+              }}
+            >
+              <Text style={styles.player}>
+                <Icon name="close" style={{ fontSize: hp("5%") }} />
+                {this.state.player1}: 7
+              </Text>
+              <Text style={styles.player}>
+                <Icon name="circle-outline" style={{ fontSize: hp("4%") }} />
+                {this.state.player2}: 5
+              </Text>
+            </View>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-around"
+              }}
+            >
+              <Text style={styles.player}>Draws: 5</Text>
+            </View>
+          </View>
+        </View>
+
+        <View
+          style={{
+            flexDirection: "column",
+            justifyContent: "space-around"
+          }}
+        >
+          {this.state.isWinner ? this.isWinner() : this.board()}
+          {this.state.isDrawOrWin && (
+            <Button
+              color="#000"
+              title="Reload game"
+              onPress={this.reloadGame}
+            />
+          )}
+        </View>
+        {this.state.isDrawOrWin ? null : (
+          <View>
+            <Text style={styles.player}>
+              Current{"\n"}move:{"\n"}
+            </Text>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-around"
+              }}
+            >
+              <Text style={styles.player}>{this.getPlayerName()}</Text>
+            </View>
+          </View>
+        )}
+      </View>
+    </ImageBackground>
+  );
+
   render() {
     return (
       <>
-        {this.state.isValid ? (
-          <ResponsiveLayout>
-            <Text style={styles.player}>Wined games</Text>
-            <View style={styles.scoreBoard}>
-              <Text style={styles.player}>
-                <Icon name="close" style={{ fontSize: hp("5%") }} /> Player 1:{" "}
-                {this.state.player1}
-              </Text>
-              <Text style={styles.player}>
-                <Icon name="circle-outline" style={{ fontSize: hp("4%") }} />{" "}
-                Player 2: {this.state.player2}
-              </Text>
-            </View>
-            <View>
-              <Text style={styles.player}>
-                Current move: {this.getPlayerName()}
-              </Text>
-            </View>
-            {this.state.isWinner ? this.isWinner() : this.board()}
-            {this.state.isDrawOrWin && (
-              <Button
-                color="#000"
-                title="Reload game"
-                onPress={this.reloadGame}
-              />
-            )}
-          </ResponsiveLayout>
+        {this.state.isLandscape ? (
+          this.state.isValid ? (
+            this.landscapeMode()
+          ) : (
+            this.renderNamesInputs()
+          )
         ) : (
-          this.renderNamesInputs()
+          <>
+            {this.state.isValid ? (
+              <ResponsiveLayout>
+                <View style={styles.scoreBoard}>
+                  <View
+                    style={{ flexDirection: "column", alignItems: "center" }}
+                  >
+                    <Text style={[styles.player, { marginBottom: "3%" }]}>
+                      Wined games
+                    </Text>
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        justifyContent: "space-between"
+                      }}
+                    >
+                      <Text style={[styles.player, { marginRight: "20%" }]}>
+                        <Icon name="close" style={{ fontSize: hp("5%") }} />
+                        {this.state.player1}: 7
+                      </Text>
+                      <Text style={styles.player}>
+                        {" "}
+                        <Icon
+                          name="circle-outline"
+                          style={{ fontSize: hp("4%") }}
+                        />
+                        {this.state.player2}: 5
+                      </Text>
+                    </View>
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        justifyContent: "space-around"
+                      }}
+                    >
+                      <Text style={styles.player}>Draws: 5</Text>
+                    </View>
+                  </View>
+                </View>
+                {this.state.isDrawOrWin ? null : (
+                  <View>
+                    <Text style={styles.player}>
+                      Current move: {this.getPlayerName()}
+                    </Text>
+                  </View>
+                )}
+
+                {this.state.isWinner ? this.isWinner() : this.board()}
+                {this.state.isDrawOrWin && (
+                  <Button
+                    color="#000"
+                    title="Reload game"
+                    onPress={this.reloadGame}
+                  />
+                )}
+              </ResponsiveLayout>
+            ) : (
+              this.renderNamesInputs()
+            )}
+          </>
         )}
       </>
     );
@@ -280,6 +391,10 @@ class Board extends React.Component {
 export default Board;
 
 const styles = StyleSheet.create({
+  scoreBoard: {
+    flexDirection: "column",
+    alignItems: "center"
+  },
   cell: {
     borderWidth: 1.5,
     height: (Dimensions.get("window").height - hp("52%")) / 3,
@@ -310,5 +425,10 @@ const styles = StyleSheet.create({
   },
   player: {
     fontSize: hp("5%")
+  },
+  landscapeContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-around"
   }
 });

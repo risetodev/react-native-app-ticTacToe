@@ -32,7 +32,7 @@ class Menu extends Component {
   }
 
   state = {
-    isLandscape: true
+    isLandscape: false
   };
 
   PvP = () => {
