@@ -5,7 +5,6 @@ import {
   TouchableOpacity,
   Dimensions,
   View,
-  Alert,
   Button,
   TextInput,
   ImageBackground,
