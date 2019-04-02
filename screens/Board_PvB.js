@@ -54,17 +54,15 @@ class Board_PvB extends Component {
     });
   };
 
-  // find a proper winner
   isWin = () => {
     (this.state.winner === "X" || this.state.winner === "O") &&
-      this.setState({ isWinner: true });
+      this.setState({ isWinner: true, lock: true });
   };
 
-  // bullshit
   isDraw = () =>
-    (this.state.winner !== "X" ||
-      (this.state.winner !== "O" && this.state.winner === "")) &&
-    this.setState({ isDraw: true });
+    this.state.gameState.filter(item => item === "").length === 1 &&
+    !this.state.isWinner &&
+    this.setState({ isDraw: true, lock: true, draws: this.state.draws + 1 });
 
   renderSymbol = index => {
     switch (this.state.gameState[index]) {
@@ -77,6 +75,7 @@ class Board_PvB extends Component {
     }
   };
 
+  //state async to fix!
   onPress = index => {
     if (this.state.gameState[index] !== "") return;
     let board = this.state.gameState;
@@ -85,17 +84,17 @@ class Board_PvB extends Component {
     this.setState({ gameState: board });
     this.setState({ currentPlayer: "Bot" });
     let aiMove = ticTacToe.computeMove(this.state.gameState);
-    // console.log(aiMove);
+    console.log(this.state.gameState);
+    console.log(aiMove);
     setTimeout(() => {
       this.setState({
         gameState: aiMove.nextBestGameState,
         currentPlayer: "X",
         winner: aiMove.winner
       });
-
       this.isWin();
-      //     this.isDraw();
-    }, 500);
+      this.isDraw();
+    }, 700);
   };
 
   getPlayerName = () =>
@@ -104,7 +103,9 @@ class Board_PvB extends Component {
   WinnerComponent = () => {
     return (
       <View>
-        <Text style={styles.player}>{this.getPlayerName()} wins!</Text>
+        <Text style={styles.player}>
+          {this.state.winner === "X" ? this.state.player : this.state.AI} wins!
+        </Text>
       </View>
     );
   };
