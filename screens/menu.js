@@ -18,8 +18,7 @@ import { ResponsiveLayout } from "../ViewComponents/ResponsiveLayout";
 
 class Menu extends Component {
   state = {
-    isLandscape:
-      Dimensions.get("window").height < Dimensions.get("window").width
+    isLandscape: false
   };
   componentDidMount() {
     Dimensions.addEventListener("change", () =>
@@ -28,11 +27,6 @@ class Menu extends Component {
           Dimensions.get("window").height < Dimensions.get("window").width
       })
     );
-
-    setTimeout(() => {
-      this.props.navigation.navigate("Board_PvB");
-      console.log("Board_PvB");
-    }, 0);
   }
 
   PvP = () => {

@@ -6,25 +6,36 @@ import {
   Dimensions,
   StyleSheet,
   Image,
-  Button
+  Button,
+  ImageBackground
 } from "react-native";
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp
 } from "react-native-responsive-screen";
-import ticTacToe from "tic-tac-toe-ai-engine";
+import tictactoeai from "tic-tac-toe-minimax";
 import { MaterialCommunityIcons as Icon } from "react-native-vector-icons";
 import { ResponsiveLayout } from "../ViewComponents/ResponsiveLayout";
 import label from "../assets/label.png";
 
+import menu_background from "../assets/menu_background.jpg";
+
+const { GameStep } = tictactoeai;
+const symbols = {
+  huPlayer: "X",
+  aiPlayer: "O"
+};
+const dif = "Easy";
 class Board_PvB extends Component {
   state = {
-    gameState: ["", "", "", "", "", "", "", "", ""],
-    currentPlayer: "X",
-    player: "Mike",
+    gameState: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+    playerSymbol: "X",
+    player: "Player",
     playerScore: 0,
-    AI: "Bot",
-    AIScore: 0,
+    currentMove: "X",
+    ai: "Bot",
+    aiSymbol: "O",
+    aiScore: 0,
     draws: 0,
     winner: "",
     isWinner: false,
@@ -35,34 +46,25 @@ class Board_PvB extends Component {
   };
 
   componentDidMount() {
-    this.initGame();
     Dimensions.addEventListener("change", () =>
       this.setState({
         isLandscape:
           Dimensions.get("window").height < Dimensions.get("window").width
       })
     );
+    this.initGame();
   }
 
   initGame = () => {
     this.setState({
-      gameState: ["", "", "", "", "", "", "", "", ""],
+      gameState: [0, 1, 2, 3, 4, 5, 6, 7, 8],
       currentPlayer: "X",
+      winner: "",
       isWinner: false,
       isDraw: false,
       lock: false
     });
   };
-
-  isWin = () => {
-    (this.state.winner === "X" || this.state.winner === "O") &&
-      this.setState({ isWinner: true, lock: true });
-  };
-
-  isDraw = () =>
-    this.state.gameState.filter(item => item === "").length === 1 &&
-    !this.state.isWinner &&
-    this.setState({ isDraw: true, lock: true, draws: this.state.draws + 1 });
 
   renderSymbol = index => {
     switch (this.state.gameState[index]) {
@@ -75,21 +77,19 @@ class Board_PvB extends Component {
     }
   };
 
-  //state async to fix!
   onPress = index => {
-    if (this.state.gameState[index] !== "") return;
+    if (typeof this.state.gameState[index] === "string") return;
     let board = this.state.gameState;
-    let currentPlayer = this.state.currentPlayer;
+    let currentPlayer = this.state.playerSymbol;
     board[index] = currentPlayer;
-    this.setState({ gameState: board });
-    this.setState({ currentPlayer: "Bot" });
-    let aiMove = ticTacToe.computeMove(this.state.gameState);
-    console.log(this.state.gameState);
+
+    this.setState({ currentMove: "O" });
+    const aiMove = GameStep(this.state.gameState, symbols, dif);
     console.log(aiMove);
     setTimeout(() => {
       this.setState({
-        gameState: aiMove.nextBestGameState,
-        currentPlayer: "X",
+        gameState: aiMove.board,
+        currentMove: "X",
         winner: aiMove.winner
       });
       this.isWin();
@@ -97,14 +97,28 @@ class Board_PvB extends Component {
     }, 700);
   };
 
+  isWin = () => {
+    (this.state.winner === "huPlayer" || this.state.winner === "aiPlayer") &&
+      this.setState({ isWinner: true, lock: true });
+    this.state.winner === "huPlayer" &&
+      this.setState({ playerScore: this.state.playerScore + 1 });
+    this.state.winner === "aiPlayer" &&
+      this.setState({ aiScore: this.state.aiScore + 1 });
+  };
+
+  isDraw = () =>
+    this.state.winner === "draw" &&
+    this.setState({ isDraw: true, lock: true, draws: this.state.draws + 1 });
+
   getPlayerName = () =>
-    this.state.currentPlayer === "X" ? this.state.player : this.state.AI;
+    this.state.currentMove === "X" ? this.state.player : this.state.ai;
 
   WinnerComponent = () => {
     return (
       <View>
         <Text style={styles.player}>
-          {this.state.winner === "X" ? this.state.player : this.state.AI} wins!
+          {this.state.winner === "huPlayer" ? this.state.player : this.state.ai}{" "}
+          wins!
         </Text>
       </View>
     );
@@ -200,6 +214,7 @@ class Board_PvB extends Component {
       </View>
     </View>
   );
+
   landscapeMode = () => (
     <ImageBackground
       source={menu_background}
@@ -220,11 +235,11 @@ class Board_PvB extends Component {
             >
               <Text style={styles.player}>
                 <Icon name="close" style={{ fontSize: hp("5%") }} />
-                {this.state.player1}: {this.state.player1Win}
+                {this.state.player}: {this.state.playerScore}
               </Text>
               <Text style={styles.player}>
                 <Icon name="circle-outline" style={{ fontSize: hp("4%") }} />
-                {this.state.player2}: {this.state.player2Win}
+                {this.state.ai}: {this.state.aiScore}
               </Text>
             </View>
             <View
@@ -263,11 +278,7 @@ class Board_PvB extends Component {
           </View>
 
           {(this.state.isDraw || this.state.isWinner) && (
-            <Button
-              color="#000"
-              title="Reload game"
-              onPress={this.reloadGame}
-            />
+            <Button color="#000" title="Reload game" onPress={this.initGame} />
           )}
         </View>
       </View>
@@ -321,7 +332,7 @@ class Board_PvB extends Component {
                         />
                       </Text>
                       <Text style={styles.player}>
-                        {this.state.AI}: {this.state.AIScore}
+                        {this.state.ai}: {this.state.aiScore}
                       </Text>
                     </View>
                   </View>

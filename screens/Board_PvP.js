@@ -22,7 +22,6 @@ import menu_background from "../assets/menu_background.jpg";
 
 class Board extends React.Component {
   state = {
-    board: [],
     gameState: [[0, 0, 0], [0, 0, 0], [0, 0, 0]],
     currentPlayer: 1,
     player1: "Mike",
@@ -39,13 +38,13 @@ class Board extends React.Component {
   };
 
   componentDidMount() {
-    this.initGame();
     Dimensions.addEventListener("change", () =>
       this.setState({
         isLandscape:
           Dimensions.get("window").height < Dimensions.get("window").width
       })
     );
+    this.initGame();
   }
 
   initGame = () => {
