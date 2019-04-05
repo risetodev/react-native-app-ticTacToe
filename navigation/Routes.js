@@ -4,7 +4,7 @@ import Menu from "../screens/Menu";
 import Splash from "../screens/Splash";
 import Board_PvP from "../screens/Board_PvP";
 import Board_PvB from "../screens/Board_PvB";
-
+import ScoreBoard from "../screens/ScoreBoard";
 export const Routes = createStackNavigator({
   Splash: {
     screen: Splash,
@@ -26,6 +26,12 @@ export const Routes = createStackNavigator({
   },
   Board_PvB: {
     screen: Board_PvB,
+    navigationOptions: ({ navigation }) => ({
+      header: null
+    })
+  },
+  ScoreBoard: {
+    screen: ScoreBoard,
     navigationOptions: ({ navigation }) => ({
       header: null
     })

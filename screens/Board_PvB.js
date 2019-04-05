@@ -19,13 +19,14 @@ import { ResponsiveLayout } from "../ViewComponents/ResponsiveLayout";
 import label from "../assets/label.png";
 
 import menu_background from "../assets/menu_background.jpg";
+import { AsyncStorage } from "react-native";
 
 const { GameStep } = tictactoeai;
 const symbols = {
   huPlayer: "X",
   aiPlayer: "O"
 };
-const dif = "Easy";
+const dif = "Normal";
 class Board_PvB extends Component {
   state = {
     gameState: [0, 1, 2, 3, 4, 5, 6, 7, 8],
@@ -46,14 +47,19 @@ class Board_PvB extends Component {
   };
 
   componentDidMount() {
-    Dimensions.addEventListener("change", () =>
-      this.setState({
-        isLandscape:
-          Dimensions.get("window").height < Dimensions.get("window").width
-      })
-    );
+    Dimensions.addEventListener("change", this.updateOrientation);
     this.initGame();
   }
+
+  componentWillUnmount() {
+    Dimensions.removeEventListener("change", this.updateOrientation);
+  }
+  updateOrientation = () => {
+    this.setState({
+      isLandscape:
+        Dimensions.get("window").height < Dimensions.get("window").width
+    });
+  };
 
   initGame = () => {
     this.setState({
@@ -85,7 +91,7 @@ class Board_PvB extends Component {
 
     this.setState({ currentMove: "O" });
     const aiMove = GameStep(this.state.gameState, symbols, dif);
-    console.log(aiMove);
+    //console.log(aiMove);
     setTimeout(() => {
       this.setState({
         gameState: aiMove.board,

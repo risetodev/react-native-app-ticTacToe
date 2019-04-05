@@ -21,20 +21,25 @@ class Menu extends Component {
     isLandscape: false
   };
   componentDidMount() {
-    Dimensions.addEventListener("change", () =>
-      this.setState({
-        isLandscape:
-          Dimensions.get("window").height < Dimensions.get("window").width
-      })
-    );
+    Dimensions.addEventListener("change", this.updateOrientation);
+    setTimeout(() => {
+      this.props.navigation.replace("Board_PvP");
+    }, 0);
   }
 
-  PvP = () => {
-    this.props.navigation.navigate("Board_PvP");
+  componentWillUnmount() {
+    Dimensions.removeEventListener("change", this.updateOrientation);
+  }
+  updateOrientation = () => {
+    this.setState({
+      isLandscape:
+        Dimensions.get("window").height < Dimensions.get("window").width
+    });
   };
-  PvB = () => {
-    this.props.navigation.navigate("Board_PvB");
-  };
+
+  PvP = () => this.props.navigation.navigate("Board_PvP");
+  PvB = () => this.props.navigation.navigate("Board_PvB");
+  ScoreBoard = () => this.props.navigation.navigate("ScoreBoard");
 
   render() {
     return (
@@ -48,7 +53,7 @@ class Menu extends Component {
         <View>
           <MenuButton onPress={this.PvP}>Player vs Player</MenuButton>
           <MenuButton onPress={this.PvB}>Player vs BOT</MenuButton>
-          <MenuButton>Score board</MenuButton>
+          <MenuButton onPress={this.ScoreBoard}>Score board</MenuButton>
           <MenuButton onPress={BackHandler.exitApp}>Exit game</MenuButton>
         </View>
       </ResponsiveLayout>

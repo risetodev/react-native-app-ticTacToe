@@ -15,6 +15,7 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp
 } from "react-native-responsive-screen";
+import scoreDataManipulation from "../utils/scoreDataManipulation";
 
 import { MaterialCommunityIcons as Icon } from "react-native-vector-icons";
 import { ResponsiveLayout } from "../ViewComponents/ResponsiveLayout";
@@ -38,14 +39,20 @@ class Board extends React.Component {
   };
 
   componentDidMount() {
-    Dimensions.addEventListener("change", () =>
-      this.setState({
-        isLandscape:
-          Dimensions.get("window").height < Dimensions.get("window").width
-      })
-    );
+    Dimensions.addEventListener("change", this.updateOrientation);
+
     this.initGame();
   }
+
+  componentWillUnmount() {
+    Dimensions.removeEventListener("change", this.updateOrientation);
+  }
+  updateOrientation = () => {
+    this.setState({
+      isLandscape:
+        Dimensions.get("window").height < Dimensions.get("window").width
+    });
+  };
 
   initGame = () => {
     this.setState({
@@ -71,12 +78,20 @@ class Board extends React.Component {
           player1Win: this.state.player1Win + 1,
           currentPlayer: 1
         });
+        scoreDataManipulation.setData(
+          this.state.player1,
+          (this.state.player1Win + 1).toString()
+        );
         return 1;
       } else if (win === -3) {
         this.setState({
           player2Win: this.state.player2Win + 1,
           currentPlayer: -1
         });
+        scoreDataManipulation.setData(
+          this.state.player2,
+          (this.state.player2Win + 1).toString()
+        );
         return -1;
       }
     }
@@ -89,12 +104,20 @@ class Board extends React.Component {
           player1Win: this.state.player1Win + 1,
           currentPlayer: 1
         });
+        scoreDataManipulation.setData(
+          this.state.player1,
+          (this.state.player1Win + 1).toString()
+        );
         return 1;
       } else if (win === -3) {
         this.setState({
           player2Win: this.state.player2Win + 1,
           currentPlayer: -1
         });
+        scoreDataManipulation.setData(
+          this.state.player2,
+          (this.state.player2Win + 1).toString()
+        );
         return -1;
       }
     }
@@ -106,12 +129,20 @@ class Board extends React.Component {
         player1Win: this.state.player1Win + 1,
         currentPlayer: 1
       });
+      scoreDataManipulation.setData(
+        this.state.player1,
+        (this.state.player1Win + 1).toString()
+      );
       return 1;
     } else if (win === -3) {
       this.setState({
         player2Win: this.state.player2Win + 1,
         currentPlayer: -1
       });
+      scoreDataManipulation.setData(
+        this.state.player2,
+        (this.state.player2Win + 1).toString()
+      );
       return -1;
     }
 
@@ -121,14 +152,23 @@ class Board extends React.Component {
         player1Win: this.state.player1Win + 1,
         currentPlayer: 1
       });
+      scoreDataManipulation.setData(
+        this.state.player1,
+        (this.state.player1Win + 1).toString()
+      );
       return 1;
     } else if (win === -3) {
       this.setState({
         player2Win: this.state.player2Win + 1,
         currentPlayer: -1
       });
+      scoreDataManipulation.setData(
+        this.state.player2,
+        (this.state.player2Win + 1).toString()
+      );
       return -1;
     }
+    console.log(scoreDataManipulation.getAllKeys());
     return 0;
   };
 
@@ -155,7 +195,6 @@ class Board extends React.Component {
         lock: true
       });
     }
-
     this.isDrawOrWin(arr);
   };
 
@@ -197,8 +236,10 @@ class Board extends React.Component {
     for (let i = 0; i < 3; i++)
       for (let j = 0; j < 3; j++) if (array[i][j] !== 0) count++;
     count === 9 && this.setState({ isDrawOrWin: true });
-    if (count === 9 && this.getWinner() === 0)
+    if (count === 9 && this.getWinner() === 0) {
       this.setState({ draws: this.state.draws + 1, isDraw: true });
+      scoreDataManipulation.setData("draws", (this.state.draws + 1).toString());
+    }
   };
 
   isValidInput = () => {
