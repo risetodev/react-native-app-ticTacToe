@@ -22,9 +22,9 @@ class Menu extends Component {
   };
   componentDidMount() {
     Dimensions.addEventListener("change", this.updateOrientation);
-    setTimeout(() => {
-      this.props.navigation.replace("Board_PvP");
-    }, 0);
+    /*setTimeout(() => {
+      this.props.navigation.replace("ScoreBoard");
+    }, 0);*/
   }
 
   componentWillUnmount() {

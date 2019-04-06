@@ -8,14 +8,15 @@ import {
   Button,
   TextInput,
   ImageBackground,
-  Image
+  Image,
+  AsyncStorage
 } from "react-native";
 import label from "../assets/label.png";
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp
 } from "react-native-responsive-screen";
-import scoreDataManipulation from "../utils/scoreDataManipulation";
+import { initPlayers, updateData } from "../utils/DB";
 
 import { MaterialCommunityIcons as Icon } from "react-native-vector-icons";
 import { ResponsiveLayout } from "../ViewComponents/ResponsiveLayout";
@@ -25,12 +26,12 @@ class Board extends React.Component {
   state = {
     gameState: [[0, 0, 0], [0, 0, 0], [0, 0, 0]],
     currentPlayer: 1,
-    player1: "Mike",
-    player1Win: 0,
-    player2: "Ruslan",
-    player2Win: 0,
+    player1: "",
+    player1Score: 0,
+    player2: "",
+    player2Score: 0,
     draws: 0,
-    isValid: true,
+    isValid: false,
     isWinner: false,
     isDraw: false,
     isLandscape:
@@ -40,7 +41,6 @@ class Board extends React.Component {
 
   componentDidMount() {
     Dimensions.addEventListener("change", this.updateOrientation);
-
     this.initGame();
   }
 
@@ -75,22 +75,24 @@ class Board extends React.Component {
       win = board[i][0] + board[i][1] + board[i][2];
       if (win === 3) {
         this.setState({
-          player1Win: this.state.player1Win + 1,
+          player1Score: this.state.player1Score + 1,
           currentPlayer: 1
         });
-        scoreDataManipulation.setData(
+        updateData(
           this.state.player1,
-          (this.state.player1Win + 1).toString()
+          (this.state.player1Score + 1).toString(),
+          this.state.player2
         );
         return 1;
       } else if (win === -3) {
         this.setState({
-          player2Win: this.state.player2Win + 1,
+          player2Score: this.state.player2Score + 1,
           currentPlayer: -1
         });
-        scoreDataManipulation.setData(
+        updateData(
           this.state.player2,
-          (this.state.player2Win + 1).toString()
+          (this.state.player2Score + 1).toString(),
+          this.state.player1
         );
         return -1;
       }
@@ -101,22 +103,24 @@ class Board extends React.Component {
       win = board[0][i] + board[1][i] + board[2][i];
       if (win === 3) {
         this.setState({
-          player1Win: this.state.player1Win + 1,
+          player1Score: this.state.player1Score + 1,
           currentPlayer: 1
         });
-        scoreDataManipulation.setData(
+        updateData(
           this.state.player1,
-          (this.state.player1Win + 1).toString()
+          (this.state.player1Score + 1).toString(),
+          this.state.player2
         );
         return 1;
       } else if (win === -3) {
         this.setState({
-          player2Win: this.state.player2Win + 1,
+          player2Score: this.state.player2Score + 1,
           currentPlayer: -1
         });
-        scoreDataManipulation.setData(
+        updateData(
           this.state.player2,
-          (this.state.player2Win + 1).toString()
+          (this.state.player2Score + 1).toString(),
+          this.state.player1
         );
         return -1;
       }
@@ -126,22 +130,24 @@ class Board extends React.Component {
     win = board[0][0] + board[1][1] + board[2][2];
     if (win === 3) {
       this.setState({
-        player1Win: this.state.player1Win + 1,
+        player1Score: this.state.player1Score + 1,
         currentPlayer: 1
       });
-      scoreDataManipulation.setData(
+      updateData(
         this.state.player1,
-        (this.state.player1Win + 1).toString()
+        (this.state.player1Score + 1).toString(),
+        this.state.player2
       );
       return 1;
     } else if (win === -3) {
       this.setState({
-        player2Win: this.state.player2Win + 1,
+        player1Score: this.state.player2Score + 1,
         currentPlayer: -1
       });
-      scoreDataManipulation.setData(
+      updateData(
         this.state.player2,
-        (this.state.player2Win + 1).toString()
+        (this.state.player2Score + 1).toString(),
+        this.state.player1
       );
       return -1;
     }
@@ -149,26 +155,28 @@ class Board extends React.Component {
     win = board[0][2] + board[1][1] + board[2][0];
     if (win === 3) {
       this.setState({
-        player1Win: this.state.player1Win + 1,
+        player1Score: this.state.player1Score + 1,
         currentPlayer: 1
       });
-      scoreDataManipulation.setData(
+      updateData(
         this.state.player1,
-        (this.state.player1Win + 1).toString()
+        (this.state.player1Score + 1).toString(),
+        this.state.player2
       );
       return 1;
     } else if (win === -3) {
       this.setState({
-        player2Win: this.state.player2Win + 1,
+        player2Score: this.state.player2Score + 1,
         currentPlayer: -1
       });
-      scoreDataManipulation.setData(
+      updateData(
         this.state.player2,
-        (this.state.player2Win + 1).toString()
+        (this.state.player2Score + 1).toString(),
+        this.state.player1
       );
       return -1;
     }
-    console.log(scoreDataManipulation.getAllKeys());
+
     return 0;
   };
 
@@ -238,8 +246,13 @@ class Board extends React.Component {
     count === 9 && this.setState({ isDrawOrWin: true });
     if (count === 9 && this.getWinner() === 0) {
       this.setState({ draws: this.state.draws + 1, isDraw: true });
-      scoreDataManipulation.setData("draws", (this.state.draws + 1).toString());
+      updateData("draws", (this.state.draws + 1).toString());
     }
+  };
+
+  submitPlayers = () => {
+    this.setState({ isValid: true });
+    initPlayers(this.state.player1, this.state.player2);
   };
 
   isValidInput = () => {
@@ -273,7 +286,7 @@ class Board extends React.Component {
             disabled={!this.isValidInput()}
             color="#000"
             title="Submit"
-            onPress={() => this.setState({ isValid: true })}
+            onPress={this.submitPlayers}
           />
         </View>
       </View>
@@ -383,11 +396,11 @@ class Board extends React.Component {
             >
               <Text style={styles.player}>
                 <Icon name="close" style={{ fontSize: hp("5%") }} />
-                {this.state.player1}: {this.state.player1Win}
+                {this.state.player1}: {this.state.player1Score}
               </Text>
               <Text style={styles.player}>
                 <Icon name="circle-outline" style={{ fontSize: hp("4%") }} />
-                {this.state.player2}: {this.state.player2Win}
+                {this.state.player2}: {this.state.player2Score}
               </Text>
             </View>
             <View
@@ -468,7 +481,7 @@ class Board extends React.Component {
                           <Icon name="close" style={{ fontSize: hp("4%") }} />
                         </Text>
                         <Text style={styles.player}>
-                          {this.state.player1}: {this.state.player1Win}
+                          {this.state.player1}: {this.state.player1Score}
                         </Text>
                       </View>
                       <View
@@ -489,7 +502,7 @@ class Board extends React.Component {
                           />
                         </Text>
                         <Text style={styles.player}>
-                          {this.state.player2}: {this.state.player2Win}
+                          {this.state.player2}: {this.state.player2Score}
                         </Text>
                       </View>
                     </View>

@@ -19,14 +19,14 @@ import { ResponsiveLayout } from "../ViewComponents/ResponsiveLayout";
 import label from "../assets/label.png";
 
 import menu_background from "../assets/menu_background.jpg";
-import { AsyncStorage } from "react-native";
+import { updateData, initPlayers } from "../utils/DB";
 
 const { GameStep } = tictactoeai;
 const symbols = {
   huPlayer: "X",
   aiPlayer: "O"
 };
-const dif = "Normal";
+const dif = "Easy";
 class Board_PvB extends Component {
   state = {
     gameState: [0, 1, 2, 3, 4, 5, 6, 7, 8],
@@ -48,6 +48,7 @@ class Board_PvB extends Component {
 
   componentDidMount() {
     Dimensions.addEventListener("change", this.updateOrientation);
+    initPlayers(this.state.player, this.state.ai);
     this.initGame();
   }
 
@@ -100,16 +101,26 @@ class Board_PvB extends Component {
       });
       this.isWin();
       this.isDraw();
-    }, 700);
+    }, 500);
   };
 
   isWin = () => {
     (this.state.winner === "huPlayer" || this.state.winner === "aiPlayer") &&
       this.setState({ isWinner: true, lock: true });
     this.state.winner === "huPlayer" &&
-      this.setState({ playerScore: this.state.playerScore + 1 });
+      (this.setState({ playerScore: this.state.playerScore + 1 }),
+      updateData(
+        this.state.player,
+        (this.state.playerScore + 1).toString(),
+        this.state.ai
+      ));
     this.state.winner === "aiPlayer" &&
-      this.setState({ aiScore: this.state.aiScore + 1 });
+      (this.setState({ aiScore: this.state.aiScore + 1 }),
+      updateData(
+        this.state.ai,
+        (this.state.aiScore + 1).toString(),
+        this.state.player
+      ));
   };
 
   isDraw = () =>
