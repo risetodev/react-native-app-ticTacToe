@@ -559,13 +559,13 @@ const styles = StyleSheet.create({
   },
   circle: {
     color: "black",
-    fontSize: hp("12%"),
+    fontSize: hp("11%"),
     alignItems: "center",
     justifyContent: "center"
   },
   cross: {
     color: "black",
-    fontSize: hp("15%"),
+    fontSize: hp("13%"),
     alignItems: "center",
     justifyContent: "center"
   },

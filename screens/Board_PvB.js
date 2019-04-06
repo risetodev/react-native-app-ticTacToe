@@ -20,13 +20,13 @@ import { ResponsiveLayout } from "../ViewComponents/ResponsiveLayout";
 import label from "../assets/label.png";
 import menu_background from "../assets/menu_background.jpg";
 import { updateData, initPlayers } from "../utils/DB";
-
 const { GameStep } = tictactoeai;
 const symbols = {
   huPlayer: "X",
   aiPlayer: "O"
 };
 const difficulty = ["Easy", "Normal", "Hard"];
+
 class Board_PvB extends Component {
   state = {
     gameState: [0, 1, 2, 3, 4, 5, 6, 7, 8],
@@ -433,19 +433,15 @@ const styles = StyleSheet.create({
     height: Dimensions.get("window").height / 6.5,
     width: Dimensions.get("window").width / 4,
     alignItems: "center",
-    justifyContent: "center"
+    justifyContent: "space-around"
   },
   circle: {
     color: "black",
-    fontSize: hp("12%"),
-    alignItems: "center",
-    justifyContent: "center"
+    fontSize: hp("11%")
   },
   cross: {
     color: "black",
-    fontSize: hp("15%"),
-    alignItems: "center",
-    justifyContent: "center"
+    fontSize: hp("13%")
   },
   input: {
     height: hp("4%"),
