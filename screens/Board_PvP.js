@@ -8,8 +8,7 @@ import {
   Button,
   TextInput,
   ImageBackground,
-  Image,
-  AsyncStorage
+  Image
 } from "react-native";
 import label from "../assets/label.png";
 import {
@@ -17,7 +16,6 @@ import {
   heightPercentageToDP as hp
 } from "react-native-responsive-screen";
 import { initPlayers, updateData } from "../utils/DB";
-
 import { MaterialCommunityIcons as Icon } from "react-native-vector-icons";
 import { ResponsiveLayout } from "../ViewComponents/ResponsiveLayout";
 import menu_background from "../assets/menu_background.jpg";

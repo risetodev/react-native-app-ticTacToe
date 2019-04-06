@@ -1,12 +1,5 @@
 import React, { Component } from "react";
-import {
-  Text,
-  View,
-  StyleSheet,
-  FlatList,
-  Dimensions,
-  StatusBar
-} from "react-native";
+import { Text, View, StyleSheet, FlatList } from "react-native";
 import { ResponsiveLayout } from "../ViewComponents/ResponsiveLayout";
 import { getDB } from "../utils/DB";
 import {
@@ -28,7 +21,6 @@ class ScoreBoard extends Component {
   }
 
   render() {
-    console.log(this.state.DB);
     return (
       <ResponsiveLayout>
         <Text

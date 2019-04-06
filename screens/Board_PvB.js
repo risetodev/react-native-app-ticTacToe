@@ -7,7 +7,8 @@ import {
   StyleSheet,
   Image,
   Button,
-  ImageBackground
+  ImageBackground,
+  Picker
 } from "react-native";
 import {
   widthPercentageToDP as wp,
@@ -17,7 +18,6 @@ import tictactoeai from "tic-tac-toe-minimax";
 import { MaterialCommunityIcons as Icon } from "react-native-vector-icons";
 import { ResponsiveLayout } from "../ViewComponents/ResponsiveLayout";
 import label from "../assets/label.png";
-
 import menu_background from "../assets/menu_background.jpg";
 import { updateData, initPlayers } from "../utils/DB";
 
@@ -26,7 +26,7 @@ const symbols = {
   huPlayer: "X",
   aiPlayer: "O"
 };
-const dif = "Easy";
+const difficulty = ["Easy", "Normal", "Hard"];
 class Board_PvB extends Component {
   state = {
     gameState: [0, 1, 2, 3, 4, 5, 6, 7, 8],
@@ -43,7 +43,9 @@ class Board_PvB extends Component {
     isDraw: false,
     isLandscape:
       Dimensions.get("window").height < Dimensions.get("window").width,
-    lock: false
+    lock: false,
+    isDifficultChoosed: false,
+    selected: null
   };
 
   componentDidMount() {
@@ -91,7 +93,7 @@ class Board_PvB extends Component {
     board[index] = currentPlayer;
 
     this.setState({ currentMove: "O" });
-    const aiMove = GameStep(this.state.gameState, symbols, dif);
+    const aiMove = GameStep(this.state.gameState, symbols, this.state.selected);
     //console.log(aiMove);
     setTimeout(() => {
       this.setState({
@@ -302,86 +304,116 @@ class Board_PvB extends Component {
     </ImageBackground>
   );
 
+  diffComponent = () => (
+    <ResponsiveLayout>
+      <View>
+        <Text style={{ fontSize: hp("4%") }}>
+          Select difficulty for the game:
+        </Text>
+        <Picker
+          style={styles.picker}
+          mode="dropdown"
+          onValueChange={(itemValue, itemIndex) =>
+            this.setState({ isDifficultChoosed: true, selected: itemValue })
+          }
+        >
+          <Picker.Item label="Select" value="" />
+          <Picker.Item label="Easy" value="Easy" />
+          <Picker.Item label="Normal" value="Normal" />
+          <Picker.Item label="Hard" value="Hard" />
+        </Picker>
+      </View>
+    </ResponsiveLayout>
+  );
+
   render() {
     return (
       <>
-        {this.state.isLandscape ? (
-          this.landscapeMode()
+        {!this.state.isDifficultChoosed ? (
+          this.diffComponent()
         ) : (
           <>
-            <ResponsiveLayout>
-              <View style={styles.scoreBoard}>
-                <Image
-                  style={styles.label}
-                  source={label}
-                  resizeMode="contain"
-                />
-                <View
-                  style={{
-                    flexDirection: "column",
-                    alignItems: "center"
-                  }}
-                >
-                  <View style={styles.playersScoreBoard}>
-                    <View style={styles.playerScore}>
-                      <Text>
-                        <Icon name="close" style={{ fontSize: hp("4%") }} />
-                      </Text>
-                      <Text style={styles.player}>
-                        {this.state.player}: {this.state.playerScore}
-                      </Text>
+            {this.state.isLandscape ? (
+              this.landscapeMode()
+            ) : (
+              <>
+                <ResponsiveLayout>
+                  <View style={styles.scoreBoard}>
+                    <Image
+                      style={styles.label}
+                      source={label}
+                      resizeMode="contain"
+                    />
+                    <View
+                      style={{
+                        flexDirection: "column",
+                        alignItems: "center"
+                      }}
+                    >
+                      <View style={styles.playersScoreBoard}>
+                        <View style={styles.playerScore}>
+                          <Text>
+                            <Icon name="close" style={{ fontSize: hp("4%") }} />
+                          </Text>
+                          <Text style={styles.player}>
+                            {this.state.player}: {this.state.playerScore}
+                          </Text>
+                        </View>
+                        <View
+                          style={[
+                            styles.player,
+                            {
+                              margin: wp("5%")
+                            }
+                          ]}
+                        >
+                          <Text />
+                        </View>
+                        <View style={styles.playerScore}>
+                          <Text>
+                            <Icon
+                              name="circle-outline"
+                              style={{ fontSize: hp("3%") }}
+                            />
+                          </Text>
+                          <Text style={styles.player}>
+                            {this.state.ai}: {this.state.aiScore}
+                          </Text>
+                        </View>
+                      </View>
                     </View>
                     <View
-                      style={[
-                        styles.player,
-                        {
-                          margin: wp("5%")
-                        }
-                      ]}
+                      style={{
+                        flexDirection: "row",
+                        justifyContent: "center"
+                      }}
                     >
-                      <Text />
-                    </View>
-                    <View style={styles.playerScore}>
-                      <Text>
-                        <Icon
-                          name="circle-outline"
-                          style={{ fontSize: hp("3%") }}
-                        />
-                      </Text>
                       <Text style={styles.player}>
-                        {this.state.ai}: {this.state.aiScore}
+                        Draws: {this.state.draws}
                       </Text>
                     </View>
+                    {!(this.state.isDraw || this.state.isWinner) && (
+                      <View>
+                        <Text style={styles.player}>
+                          Current move: {this.getPlayerName()}
+                        </Text>
+                      </View>
+                    )}
                   </View>
-                </View>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    justifyContent: "center"
-                  }}
-                >
-                  <Text style={styles.player}>Draws: {this.state.draws}</Text>
-                </View>
-                {!(this.state.isDraw || this.state.isWinner) && (
-                  <View>
-                    <Text style={styles.player}>
-                      Current move: {this.getPlayerName()}
-                    </Text>
-                  </View>
-                )}
-              </View>
 
-              {this.state.isWinner && this.WinnerComponent()}
-              {this.state.isDraw && this.DrawComponent()}
-              {this.board()}
-              {(this.state.isDraw || this.state.isWinner) && (
-                <Button
-                  color="#000"
-                  title="Reload game"
-                  onPress={this.initGame}
-                />
-              )}
-            </ResponsiveLayout>
+                  {this.state.isWinner && this.WinnerComponent()}
+                  {this.state.isDraw && this.DrawComponent()}
+                  {this.board()}
+                  {(this.state.isDraw || this.state.isWinner) && (
+                    <Button
+                      color="#000"
+                      title="Reload game"
+                      onPress={this.initGame}
+                    />
+                  )}
+                </ResponsiveLayout>
+              </>
+            )}
           </>
         )}
       </>
@@ -444,5 +476,8 @@ const styles = StyleSheet.create({
   label: {
     height: Dimensions.get("window").height - hp("90%"),
     marginBottom: Dimensions.get("window").height - hp("98%")
+  },
+  picker: {
+    width: 300
   }
 });

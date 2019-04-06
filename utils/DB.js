@@ -8,7 +8,6 @@ export const getDB = async () => {
       await AsyncStorage.setItem("playersDB", JSON.stringify([]));
       return [];
     }
-
     return JSON.parse(playersDB);
   } catch (error) {
     alert("DataBase init - Error:\n" + error);
@@ -18,7 +17,6 @@ export const getDB = async () => {
 export const initPlayers = async (p1Name, p2Name) => {
   try {
     playersDB = await getDB();
-    //console.log("init" + playersDB);
     const isExist = playersDB.some(
       players =>
         (players.p1.name === p1Name && players.p2.name === p2Name) ||
@@ -52,7 +50,5 @@ export const updateData = async (nameToUpdate, score, p2Name) => {
     }
     return players;
   });
-  //console.log("-----");
-  console.log(playersDB);
   await AsyncStorage.setItem("playersDB", JSON.stringify(playersDB));
 };
