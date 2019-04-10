@@ -20,6 +20,11 @@ class Menu extends Component {
   state = {
     isLandscape: false
   };
+
+  componentWillMount() {
+    this.updateOrientation();
+  }
+
   componentDidMount() {
     Dimensions.addEventListener("change", this.updateOrientation);
     /* setTimeout(() => {
@@ -30,6 +35,7 @@ class Menu extends Component {
   componentWillUnmount() {
     Dimensions.removeEventListener("change", this.updateOrientation);
   }
+
   updateOrientation = () => {
     this.setState({
       isLandscape:

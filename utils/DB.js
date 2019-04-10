@@ -3,7 +3,6 @@ import { AsyncStorage } from "react-native";
 export const getDB = async () => {
   try {
     const playersDB = await AsyncStorage.getItem("playersDB");
-
     if (playersDB === null) {
       await AsyncStorage.setItem("playersDB", JSON.stringify([]));
       return [];

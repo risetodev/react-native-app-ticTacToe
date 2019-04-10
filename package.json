@@ -4,9 +4,11 @@
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "eject": "expo eject"
+    "eject": "expo eject",
+    "test": "mocha"
   },
   "dependencies": {
+    "expect": "^24.7.1",
     "expo": "^32.0.0",
     "expo-sensors": "^4.0.0",
     "react": "16.5.0",
@@ -21,7 +23,9 @@
     "tic-tac-toe-minimax": "^1.0.8"
   },
   "devDependencies": {
-    "babel-preset-expo": "^5.0.0"
+    "@babel/preset-env": "^7.4.3",
+    "babel-preset-expo": "^5.0.0",
+    "react-test-renderer": "^16.8.6"
   },
   "private": true
 }

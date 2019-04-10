@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "ticTacToe",
+    "name": "Tic Tac Toe game",
     "slug": "ticTacToe",
     "privacy": "public",
     "sdkVersion": "32.0.0",

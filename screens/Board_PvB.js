@@ -92,14 +92,15 @@ class Board_PvB extends Component {
     let currentPlayer = this.state.playerSymbol;
     board[index] = currentPlayer;
 
-    this.setState({ currentMove: "O" });
+    this.setState({ currentMove: "O", lock: true });
     const aiMove = GameStep(this.state.gameState, symbols, this.state.selected);
     //console.log(aiMove);
     setTimeout(() => {
       this.setState({
         gameState: aiMove.board,
         currentMove: "X",
-        winner: aiMove.winner
+        winner: aiMove.winner,
+        lock: false
       });
       this.isWin();
       this.isDraw();
@@ -437,11 +438,11 @@ const styles = StyleSheet.create({
   },
   circle: {
     color: "black",
-    fontSize: hp("11%")
+    fontSize: hp("12%")
   },
   cross: {
     color: "black",
-    fontSize: hp("13%")
+    fontSize: hp("12%")
   },
   input: {
     height: hp("4%"),
