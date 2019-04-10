@@ -41,8 +41,7 @@ class Board_PvB extends Component {
     winner: "",
     isWinner: false,
     isDraw: false,
-    isLandscape:
-      Dimensions.get("window").height < Dimensions.get("window").width,
+    isLandscape: false,
     lock: false,
     isDifficultChoosed: false,
     selected: null
@@ -52,6 +51,10 @@ class Board_PvB extends Component {
     Dimensions.addEventListener("change", this.updateOrientation);
     initPlayers(this.state.player, this.state.ai);
     this.initGame();
+  }
+
+  componentWillMount() {
+    this.updateOrientation();
   }
 
   componentWillUnmount() {

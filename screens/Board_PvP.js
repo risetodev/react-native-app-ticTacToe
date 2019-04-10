@@ -32,14 +32,17 @@ class Board extends React.Component {
     isValid: false,
     isWinner: false,
     isDraw: false,
-    isLandscape:
-      Dimensions.get("window").height < Dimensions.get("window").width,
+    isLandscape: false,
     lock: false
   };
 
   componentDidMount() {
     Dimensions.addEventListener("change", this.updateOrientation);
     this.initGame();
+  }
+
+  componentWillMount() {
+    this.updateOrientation();
   }
 
   componentWillUnmount() {

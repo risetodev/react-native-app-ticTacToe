@@ -1,10 +1,10 @@
 {
   "webpackServerPort": null,
-  "expoServerNgrokUrl": "https://rc-hsk.risetodev.react-native-app-tictactoe.exp.direct",
-  "packagerNgrokUrl": "https://packager.rc-hsk.risetodev.react-native-app-tictactoe.exp.direct",
-  "ngrokPid": 484,
-  "packagerPort": 19001,
-  "packagerPid": 10416,
+  "expoServerNgrokUrl": null,
+  "packagerNgrokUrl": null,
+  "ngrokPid": null,
+  "packagerPort": null,
+  "packagerPid": null,
   "devToolsPort": 19002,
-  "expoServerPort": 19000
+  "expoServerPort": null
 }
